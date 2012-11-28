@@ -50,6 +50,21 @@ import org.simpleframework.transport.reactor.Operation;
  */
 class Acceptor implements Operation {
 
+   private static  String[] goodCiphers = {
+       "SSL_RSA_WITH_RC4_128_MD5",
+       "SSL_RSA_WITH_RC4_128_SHA",
+       "SSL_RSA_WITH_3DES_EDE_CBC_SHA",
+       "SSL_DHE_DSS_WITH_3DES_EDE_CBC_SHA",
+       "SSL_DHE_RSA_WITH_3DES_EDE_CBC_SHA",
+       "TLS_DHE_RSA_WITH_AES_128_CBC_SHA",
+       "TLS_DHE_DSS_WITH_AES_128_CBC_SHA",
+       "TLS_RSA_WITH_AES_128_CBC_SHA"
+   };
+
+   public static void setCiphers(String[] ciphers) {
+     goodCiphers = ciphers;
+   }
+
    /**
     * This is the server socket channel used to accept connections.
     */
@@ -218,6 +233,10 @@ class Acceptor implements Operation {
     */
    private void process(SocketChannel channel) throws IOException {
       SSLEngine engine = context.createSSLEngine();
+
+      if(goodCiphers != null && goodCiphers.length != 0) {
+          engine.setEnabledCipherSuites(goodCiphers);
+      }
 
       try {
          process(channel, engine);
